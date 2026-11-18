@@ -121,6 +121,11 @@ test('分 P、番剧按 URL 解析，页面过期状态不能串台', async () =
     assert.equal((await resolveVideo('https://www.bilibili.com/video/BVtest?p=2', { aid: 9, cid: 10, page: 1, bvid: 'BVtest' })).cid, 20);
     assert.equal((await resolveVideo('https://www.bilibili.com/bangumi/play/ep12', { aid: 1, cid: 101, episodeKey: '/bangumi/play/ep11' })).cid, 102);
     assert.equal((await resolveVideo('https://www.bilibili.com/video/av9', { aid: 1, cid: 101, page: 1 })).cid, 10);
+    assert.equal((await resolveVideo('https://www.bilibili.com/video/BVtest', { aid: 9, bvid: 'BVtest', cid: 999, page: 1 })).cid, 10);
+    assert.equal((await resolveVideo('https://www.bilibili.com/video/BVtest', { player: { aid: 9, bvid: 'BVtest', cid: 20 } })).cid, 20);
+    await assert.rejects(resolveVideo('https://www.bilibili.com/video/BVtest?p=1', { player: { aid: 9, bvid: 'BVtest', cid: 20 } }), /分 P/);
+    assert.equal((await resolveVideo('https://www.bilibili.com/bangumi/play/ss1', { player: { aid: 2, cid: 102 } })).cid, 102);
+    await assert.rejects(resolveVideo('https://www.bilibili.com/bangumi/play/ss1'), /番剧/);
     await assert.rejects(resolveVideo('https://evil.test/video/BVtest'), /B 站/);
   } finally { globalThis.fetch = original; }
 });

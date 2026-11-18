@@ -3,6 +3,7 @@
 <body><h1 class="video-title">自动化测试 · 旁白 SideLyric</h1><div class="bpx-player-container" id="bilibili-player"><div class="bpx-player-video-area"><video></video><div class="bpx-player-subtitle-panel-text"></div></div><button id="full">全屏</button></div>
 <script>
 window.__INITIAL_STATE__={videoData:{aid:170001,bvid:'BV17x411w7KC',cid:279786,title:'自动化测试 · 旁白',pages:[{page:1,cid:279786,part:'第一 P'},{page:2,cid:279787,part:'第二 P'}]},epInfo:{id:12,aid:170002,cid:279788,bvid:'BVtest',title:'番剧第二集'}};
+window.player={getManifest(){if(window.__activePlayer!==undefined)return window.__activePlayer;const state=window.__INITIAL_STATE__;if(location.pathname.includes('/bangumi/'))return {...state.epInfo,p:1};const p=Number(new URL(location.href).searchParams.get('p'))||1;return {...state.videoData,cid:state.videoData.pages.find(part=>part.page===p)?.cid,p};}};
 Object.defineProperties(window,{__time:{get(){return Number(document.querySelector('video').dataset.time||1)},set(value){document.querySelector('video').dataset.time=value}},__portrait:{set(value){document.querySelector('video').dataset.portrait=value}}});
 document.querySelector('#full').onclick=()=>document.querySelector('#bilibili-player').requestFullscreen();
 </script></body></html>

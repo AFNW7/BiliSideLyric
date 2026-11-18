@@ -16,7 +16,7 @@ function fixture({ playerCID = 10, delayTrack = false } = {}) {
     pageKey: () => new URL(location.href).pathname, getTitle: () => '当前视频', getDOMIdentity: () => '',
     parseSubtitle: () => [{ from: 0, to: 10, content: '手动字幕' }],
     chrome: { storage: { local: { get: async () => ({ imports: {} }), set: async () => {} } } },
-    askPage: async () => ({}),
+    askPage: async () => ({ player: { aid: 1, bvid: 'BVcurrent', cid: 10 } }),
     askWorker: async message => message.type === 'SL_RESOLVE'
       ? { aid: 1, bvid: 'BVcurrent', cid: 10, title: '当前视频' } : ['https://api.bilibili.com/x/player/v2'],
     readJSON: async url => {
@@ -96,4 +96,62 @@ test('本地缓存必须确认 aid/cid，旧缓存和其他分集不会自动套
     assert.equal(source.cues[0].content, cid === 10 ? '缓存字幕' : '接口字幕');
     source.destroy();
   }
+});
+
+test('主接口明确无字幕时停止，不从备用接口拼出字幕', async () => {
+  const { source, sandbox } = fixture();
+  const requested = [];
+  const read = sandbox.readJSON;
+  sandbox.askWorker = async message => message.type === 'SL_RESOLVE'
+    ? { aid: 1, bvid: 'BVcurrent', cid: 10, title: '当前视频' }
+    : ['https://api.bilibili.com/x/player/wbi/v2', 'https://api.bilibili.com/x/player/v2'];
+  sandbox.readJSON = async url => {
+    requested.push(url);
+    return url.includes('/wbi/') ? { code: 0, data: { cid: 10, subtitle: { subtitles: [] } } } : read(url);
+  };
+  await source.start();
+  assert.equal(source.cues.length, 0);
+  assert.deepEqual(requested, ['https://api.bilibili.com/x/player/wbi/v2']);
+  assert.doesNotMatch(source.status.detail, /自动重试/);
+  source.destroy();
+});
+
+test('同一 URL 的播放器已换片时，旧接口回显原 cid 也不能加载', async () => {
+  const state = fixture({ delayTrack: true });
+  const loading = state.source.start();
+  await new Promise(resolve => setImmediate(resolve));
+  state.sandbox.askPage = async () => ({ player: { aid: 2, bvid: 'BVnext', cid: 20 } });
+  state.release();
+  await loading;
+  assert.equal(state.source.cues.length, 0);
+  state.source.destroy();
+});
+
+test('无法读取实际播放器身份时，不套用页面状态和字幕响应', async () => {
+  const { source, sandbox } = fixture();
+  sandbox.askPage = async () => ({ aid: 1, cid: 10, bvid: 'BVcurrent' });
+  await source.start();
+  assert.equal(source.cues.length, 0);
+  assert.notEqual(source.status.phase, 'ready');
+  source.destroy();
+});
+
+test('B 站明确标记无语音内容时，不自动使用 AI 识别字幕', async () => {
+  const { source, sandbox } = fixture();
+  sandbox.askWorker = async message => message.type === 'SL_RESOLVE'
+    ? { aid: 1, bvid: 'BVcurrent', cid: 10, asrLanguage: 'zxx' } : ['https://api.bilibili.com/x/player/wbi/v2'];
+  await source.start();
+  assert.equal(source.cues.length, 0);
+  source.destroy();
+});
+
+test('主接口网络失败仍可使用当前视频的备用接口字幕', async () => {
+  const { source, sandbox } = fixture();
+  const read = sandbox.readJSON;
+  sandbox.askWorker = async message => message.type === 'SL_RESOLVE'
+    ? { aid: 1, bvid: 'BVcurrent', cid: 10 } : ['https://api.bilibili.com/x/player/wbi/v2', 'https://api.bilibili.com/x/player/v2'];
+  sandbox.readJSON = async url => { if (url.includes('/wbi/')) throw new Error('网络失败'); return read(url); };
+  await source.start();
+  assert.equal(source.cues[0].content, '接口字幕');
+  source.destroy();
 });

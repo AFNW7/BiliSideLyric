@@ -28,7 +28,7 @@ let address = signedURL.replace('https:', '');
 let blockPage = false;
 await context.route(`${origin}/**`, route => route.fulfill({ contentType: 'text/html', body: fixture }));
 await context.route('https://api.bilibili.com/**', route => route.fulfill({
-  headers, json: route.request().url().includes('/nav') ? {
+  headers, json: route.request().url().includes('/view?') ? { code: 0, data: { aid: 170001, bvid: 'BV17x411w7KC', title: '视频', pages: [{ page: 1, cid: 279786 }] } } : route.request().url().includes('/nav') ? {
     code: 0, data: { wbi_img: {
       img_url: 'https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png',
       sub_url: 'https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png'

@@ -26,6 +26,18 @@ export class SubtitleSource {
     return generation === this.generation && this.key === pageKey() && (!cid || !this.info || cid === String(this.info.cid));
   }
 
+  /** 字幕提交前从播放器本身确认一次，接口回显的请求 cid 不能证明正在播放哪段视频。 */
+  async confirmPlayer(generation) {
+    const context = await askPage('context');
+    if (!this.isCurrent(generation)) return false;
+    const active = context?.player;
+    if (!active || String(active.aid) !== String(this.info?.aid) || String(active.cid) !== String(this.info?.cid) || (active.bvid && this.info.bvid && active.bvid !== this.info.bvid)) {
+      this.cues = []; this.onTimeline([]);
+      throw new Error('尚未确认正在播放的视频，已停止加载字幕，请稍后重试');
+    }
+    return true;
+  }
+
   async start() {
     clearTimeout(this.retryTimer);
     const generation = ++this.generation;
@@ -53,7 +65,8 @@ export class SubtitleSource {
       if (!this.isCurrent(generation)) return;
       this.info = info;
       if (!this.isCurrent(generation)) return;
-      this.update({ title: info.title || getTitle() });
+      if (!await this.confirmPlayer(generation)) return;
+      this.update({ title: info.title || getTitle(), video: { aid: info.aid, cid: info.cid, bvid: info.bvid, page: info.page } });
       if (attempt === 0) {
         try {
           const { imports = {} } = await chrome.storage.local.get('imports');
@@ -61,7 +74,7 @@ export class SubtitleSource {
           const saved = imports[this.key];
           if (saved && String(saved.cid) === String(info.cid) && String(saved.aid) === String(info.aid)) {
             const cues = normalizeTimeline(saved.cues);
-            if (cues.length) { this.useImported(cues, saved.name); return; }
+            if (cues.length && await this.confirmPlayer(generation)) { this.useImported(cues, saved.name); return; }
           }
         } catch { /* 未经视频标识确认的旧缓存不自动恢复。 */ }
       }
@@ -81,8 +94,10 @@ export class SubtitleSource {
           failure = undefined;
           tracks = (Array.isArray(data.subtitle?.subtitles) ? data.subtitle.subtitles : [])
             .filter(track => track && typeof track.subtitle_url === 'string' && typeof track.lan === 'string');
-          if (tracks.length) break;
-        } catch (error) { failure = error; }
+          if (info.asrLanguage === 'zxx') tracks = tracks.filter(track => !/^(ai-|auto)/.test(track.lan) && track.type !== 1);
+          if (!tracks.length) throw Object.assign(new Error('此视频暂未提供可读取的字幕'), { retryable: false, empty: true });
+          break;
+        } catch (error) { if (error.empty) throw error; failure = error; }
       }
       if (!this.isCurrent(generation)) return;
       tracks = tracks.filter(track => typeof track.subtitle_url === 'string' && typeof track.lan === 'string').sort((first, second) => rank(first) - rank(second));
@@ -106,6 +121,7 @@ export class SubtitleSource {
     const url = normalizeSubtitleURL(track.subtitle_url);
     const data = await readJSON(url);
     if (!this.isCurrent(generation)) return;
+    if (!await this.confirmPlayer(generation)) return;
     const cues = normalizeTimeline(data.body);
     if (!cues.length) throw new Error('这条字幕没有有效时间轴');
     this.domMode = false;
@@ -183,6 +199,7 @@ export class SubtitleSource {
     const generation = this.generation;
     const cues = parseSubtitle(await file.text(), file.name);
     if (key !== this.key || !this.isCurrent(generation)) throw new Error('视频已经切换，请重新导入');
+    if (info && !await this.confirmPlayer(generation)) return;
     this.useImported(cues, file.name);
     if (!info) { this.update({ detail: '本地字幕已加载；视频标识未确认，本次不保存' }); return; }
     try {

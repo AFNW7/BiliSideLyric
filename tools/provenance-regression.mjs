@@ -16,6 +16,7 @@ const origin = 'https://www.bilibili.com';
 const headers = { 'access-control-allow-origin': origin, 'access-control-allow-credentials': 'true' };
 let mode = 'none';
 const downloads = [];
+const apiRequests = [];
 const results = [];
 const errors = [];
 const context = await chromium.launchPersistentContext(profile, {
@@ -25,13 +26,17 @@ const context = await chromium.launchPersistentContext(profile, {
 await context.route(`${origin}/**`, route => route.fulfill({ contentType: 'text/html', body: fixture }));
 await context.route('https://api.bilibili.com/**', route => {
   const url = new URL(route.request().url());
+  apiRequests.push(url.pathname);
+  if (url.pathname.endsWith('/view')) return route.fulfill({ headers, json: { code: 0, data: {
+    aid: 170001, bvid: 'BV17x411w7KC', title: '当前视频', pages: [{ page: 1, cid: 279786, asr_language: mode === 'no-speech' ? 'zxx' : 'zh' }, { page: 2, cid: 279787, asr_language: mode === 'no-speech' ? 'zxx' : 'zh' }]
+  } } });
   if (url.pathname.endsWith('/nav')) return route.fulfill({ headers, json: { code: 0, data: { wbi_img: {
     img_url: 'https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png',
     sub_url: 'https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png'
   } } } });
   const cid = Number(url.searchParams.get('cid')) || 279786;
   const wrong = mode === 'wrong' || mode === 'fallback' && url.pathname.includes('/wbi/');
-  const data = { aid: 170001, cid: wrong ? 999999 : cid, bvid: 'BV17x411w7KC', subtitle: { subtitles: mode === 'none' ? [] : [
+  const data = { aid: 170001, cid: wrong ? 999999 : cid, bvid: 'BV17x411w7KC', subtitle: { subtitles: mode === 'none' || mode === 'empty-primary' && url.pathname.includes('/wbi/') ? [] : [
     { id: 1, lan: 'ai-zh', lan_doc: 'AI 中文', subtitle_url: `https://aisubtitle.hdslb.com/${wrong ? 'wrong' : cid}` }
   ] } };
   if (mode === 'missing') delete data.cid;
@@ -138,6 +143,34 @@ try {
     await page.waitForTimeout(1300);
     assert.equal(downloads.length, count);
     assert.equal((await status()).phase, 'ready');
+  });
+  await check('主接口明确无字幕时不查询备用接口，也不自动重试搜出字幕', async () => {
+    mode = 'empty-primary';
+    apiRequests.length = 0;
+    const before = downloads.length;
+    await page.reload();
+    await hint.filter({ hasText: '开启 AI 字幕' }).waitFor();
+    await page.waitForTimeout(5500);
+    assert.equal((await status()).count, 0);
+    assert.equal(downloads.length, before);
+    assert.equal(apiRequests.filter(path => path === '/x/player/v2').length, 0);
+    assert.equal(apiRequests.filter(path => path === '/x/player/wbi/v2').length, 1);
+  });
+  await check('B 站明确标记无语音时忽略 AI 字幕，当前页面状态的旧 cid 不被使用', async () => {
+    mode = 'no-speech';
+    const before = downloads.length;
+    await page.reload();
+    await hint.filter({ hasText: '开启 AI 字幕' }).waitFor();
+    assert.equal(downloads.length, before);
+    assert.equal((await status()).count, 0);
+    mode = 'fallback';
+    await page.evaluate(() => {
+      window.__activePlayer = { aid: 170001, bvid: 'BV17x411w7KC', cid: 279787, p: 2 };
+      window.__INITIAL_STATE__.videoData.pages[1].cid = 999999;
+    });
+    await notice.locator('[data-action="retry"]').click();
+    await current.filter({ hasText: '当前视频的真实字幕' }).waitFor();
+    assert.equal((await status()).video.cid, 279787);
   });
   await check('外部导入按钮工作，手动字幕仍可按当前视频恢复', async () => {
     mode = 'none';

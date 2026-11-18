@@ -31,7 +31,7 @@ await context.route('https://www.bilibili.com/**', route => route.fulfill({ cont
 await context.route('https://api.bilibili.com/**', route => {
   const url = new URL(route.request().url());
   const cid = Number(url.searchParams.get('cid')) || 279786;
-  const body = url.pathname.endsWith('/nav') ? { code: 0, data: { wbi_img: { img_url: 'https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png', sub_url: 'https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png' } } } :
+  const body = url.pathname.endsWith('/view') ? { code: 0, data: { aid: 170001, bvid: 'BV17x411w7KC', title: '视频', pages: [{ page: 1, cid: 279786 }, { page: 2, cid: 279787 }] } } : url.pathname.endsWith('/nav') ? { code: 0, data: { wbi_img: { img_url: 'https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png', sub_url: 'https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png' } } } :
     url.pathname.includes('/season') ? { code: 0, result: { title: '番剧', episodes: [{ id: 12, aid: 170002, cid: 279788, bvid: 'BVtest', title: '2' }] } } :
       { code: 0, data: { cid, subtitle: { subtitles: noTracks ? [] : [{ id: 1, lan: 'ai-zh', lan_doc: `AI 中文 · ${cid}`, subtitle_url: `//aisubtitle.hdslb.com/bfs/ai_subtitle/prod/${cid}?auth_key=1795000000-0-0-signature` }] } } };
   return route.fulfill({ json: body, headers: { 'access-control-allow-origin': 'https://www.bilibili.com', 'access-control-allow-credentials': 'true' } });

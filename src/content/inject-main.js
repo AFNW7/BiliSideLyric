@@ -2,6 +2,14 @@
   if (window.__SIDELYRIC_MAIN__) return;
   window.__SIDELYRIC_MAIN__ = true;
   const channel = 'sidelyric:bridge:v1';
+  function activePlayer() {
+    try {
+      const player = window.player;
+      const info = player?.getManifest?.() || player?.getVideoMessage?.();
+      if (!/^[1-9]\d*$/.test(String(info?.aid)) || !/^[1-9]\d*$/.test(String(info?.cid))) return null;
+      return { aid: info.aid, cid: info.cid, bvid: info.bvid, page: info.p || info.page, episodeId: info.episodeId };
+    } catch { return null; }
+  }
   function context() {
     const state = window.__INITIAL_STATE__ || {};
     const data = state.videoData || {};
@@ -10,11 +18,12 @@
     const part = data.pages?.find(item => item.page === page);
     const episode = state.epInfo || {};
     const episodeKey = url.pathname.match(/^\/bangumi\/play\/(ep|ss)(\d+)/)?.[0];
+    const player = activePlayer();
     if (episodeKey) {
       const valid = episodeKey === `/bangumi/play/ep${episode.id}`;
-      return valid ? { aid: episode.aid, cid: episode.cid, bvid: episode.bvid, title: episode.long_title || episode.title, episodeKey } : {};
+      return { ...(valid ? { aid: episode.aid, cid: episode.cid, bvid: episode.bvid, title: episode.long_title || episode.title, episodeKey } : {}), player };
     }
-    return { aid: data.aid || state.aid, bvid: data.bvid || state.bvid, cid: part?.cid || (page === 1 ? data.cid || state.cid : undefined), title: data.title, page };
+    return { aid: data.aid || state.aid, bvid: data.bvid || state.bvid, cid: part?.cid || (page === 1 ? data.cid || state.cid : undefined), title: data.title, page, player };
   }
   window.addEventListener('message', async event => {
     const message = event.data;

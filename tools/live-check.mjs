@@ -17,7 +17,7 @@ try {
   const page = await context.newPage();
   const errors = [];
   page.on('pageerror', error => { if (/sidelyric|chrome-extension/i.test(error.stack || '')) errors.push(error.message); });
-  const videos = ['https://www.bilibili.com/video/BV1GJ411x7h7', 'https://www.bilibili.com/video/BV17x411w7KC'];
+  const videos = ['https://www.bilibili.com/video/BV1qCs26dEdE/', 'https://www.bilibili.com/video/BV1GJ411x7h7', 'https://www.bilibili.com/video/BV17x411w7KC'];
   for (const url of videos) {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });

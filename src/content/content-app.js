@@ -42,6 +42,7 @@ export async function start() {
     for (const name of ['loadedmetadata', 'resize', 'enterpictureinpicture', 'leavepictureinpicture']) {
       video.addEventListener(name, () => renderer.attach(video), { signal: videoEvents.signal });
     }
+    for (const name of ['emptied', 'loadstart']) video.addEventListener(name, () => source.start(), { signal: videoEvents.signal });
   }
 
   function check() {
@@ -57,7 +58,7 @@ export async function start() {
     if (video) renderer.ui.mountNotice(video);
     const nextKey = pageKey();
     const nextIdentity = getDOMIdentity();
-    if (nextKey !== key || (identity && nextIdentity && nextIdentity !== identity)) {
+    if (nextKey !== key || (identity && nextIdentity && nextIdentity !== identity) || (source.info && !source.isCurrent())) {
       key = nextKey;
       stateCID = '';
       source.start();
@@ -77,12 +78,12 @@ export async function start() {
       const currentKey = pageKey();
       const context = await askPage('context');
       if (destroyed || currentKey !== key) return;
-      const cid = String(context?.cid || '');
-      if (cid && stateCID && cid !== stateCID) source.start();
+      const cid = context?.player ? `${context.player.aid}:${context.player.cid}` : '';
+      if ((stateCID && cid !== stateCID) || (cid && source.info && cid !== `${source.info.aid}:${source.info.cid}`)) source.start();
       stateCID = cid;
     } catch { /* MAIN bridge 不可用时后台仍可继续工作。 */ }
     finally { checkingContext = false; }
-  }, 2000);
+  }, 500);
   function tick() {
     if (destroyed) return;
     if (video && !document.hidden) {
