@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>旁白 SideLyric · 播放器体验室</title><link rel="icon" href="../assets/icon-32.png"><link rel="stylesheet" href="../src/styles/settings.css"><link rel="stylesheet" href="demo.css"></head>
+<body>
+  <header class="site-header"><a class="wordmark" href="#"><img src="../assets/mark.svg" alt="">旁白<span>SIDELYRIC</span></a><span class="header-note">把字幕，放在目光停留的地方。</span><span class="edge-badge"><i></i> Edge 扩展 · 1.0.3</span></header>
+  <main>
+    <div class="intro"><div><div class="eyebrow">A LITTLE SPACE FOR EVERY WORD</div><h1>听见画面，<span>也看见每一句。</span></h1><p>B 站字幕的新位置。像歌词一样流动，让注意力留在此刻。</p></div><span class="intro-tag">无构建 · 本地运行 · 自动同步</span></div>
+    <div class="workspace">
+      <section class="watch">
+        <div class="player-shell" id="player">
+          <div class="bpx-player-video-area">
+            <video aria-hidden="true"></video>
+            <svg class="landscape" viewBox="0 0 1280 780" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <defs><linearGradient id="sky" x2="0" y2="1"><stop stop-color="#143938"/><stop offset=".6" stop-color="#6f8d74"/><stop offset="1" stop-color="#b8bb8d"/></linearGradient><linearGradient id="ridge" x2="0" y2="1"><stop stop-color="#1f5552"/><stop offset="1" stop-color="#102c32"/></linearGradient><radialGradient id="light"><stop stop-color="#ffe5a3" stop-opacity=".5"/><stop offset="1" stop-color="#ffedb5" stop-opacity="0"/></radialGradient><linearGradient id="river" x2="0" y2="1"><stop stop-color="#a5c4aa"/><stop offset="1" stop-color="#305957"/></linearGradient></defs>
+              <path fill="url(#sky)" d="M0 0h1280v780H0z"/><circle cx="820" cy="235" r="310" fill="url(#light)"/><circle cx="826" cy="215" r="63" fill="#f4dd9f" opacity=".7"/>
+              <path d="m0 405 185-129 142 84 179-187 218 190 200-86 179 83 177-91v511H0Z" fill="#719c8c" opacity=".6"/>
+              <path d="m0 446 151-80 159 60 237-158 225 182 203-125 305 111v344H0Z" fill="#477d73"/>
+              <path d="m0 401 241 110 173-40 178 107 165-97 170 78 353-113v334H0Z" fill="url(#ridge)"/>
+              <path d="M748 506c-115 25-119 60-39 86s154 36 37 77-221 59-213 111h366c-86-49-67-64-8-105s-36-61-118-82-72-49 9-74Z" fill="url(#river)" opacity=".74"/>
+              <path d="M0 554c167-47 223 58 388 18s177 76 185 208H0Z" fill="#123e3d"/><path d="M1280 532c-124-27-142 112-293 100S889 724 826 780h454Z" fill="#133a39"/>
+              <g fill="none" stroke="#c3d9b9" stroke-width="1" opacity=".15"><path d="M0 591c149-55 227 53 374 25s162 55 172 145"/><path d="M0 615c149-55 227 53 374 25s162 55 172 145"/><path d="M0 640c149-55 227 53 374 25s162 55 172 145"/><path d="M1280 576c-177 0-124 114-282 96s-65 78-136 108"/><path d="M1280 602c-177 0-124 114-282 96s-65 78-136 108"/></g>
+            </svg>
+            <div class="scene-shade"></div><div class="scene-label">SIDELYRIC ORIGINAL <span>／</span> 01</div>
+            <div class="scene-type"><span>给忙碌一点留白</span><strong>慢<br>一<br>点<span>。</span></strong><small>STAY IN THE MOMENT</small></div>
+          </div>
+          <div class="demo-controls"><button id="play" aria-label="暂停演示">Ⅱ</button><span id="clock">00:18</span><input type="range" id="seek" min="0" max="71" step="0.05" value="18" aria-label="演示播放进度"><span>01:12</span><button id="fullscreen" aria-label="全屏">⛶</button></div>
+        </div>
+        <div class="video-meta"><div><h2>给忙碌一点留白｜听风经过，慢慢生活</h2><p><span class="demo-dot"></span>内置示例字幕 <span>·</span> 实时演示 <span>·</span> 拖动进度条，试试歌词如何跟随</p></div><button class="long-demo" id="long-demo">试试超长句 <span>↗</span></button></div>
+        <div class="feature-row"><span><b>01</b> 自动填满上下文</span><span><b>02</b> 长句随播放推进</span><span><b>03</b> 全屏位置跟随</span></div>
+      </section>
+      <aside><div class="aside-heading"><span>你的观看方式</span><small>LIVE PREVIEW</small></div><div id="settings"></div><div class="aside-note">拖动滑块，即刻预览。<br>这是示例体验；安装扩展后会自动连接 B 站字幕。</div></aside>
+    </div>
+    <footer><span>旁白 SideLyric</span><span>每一句，都有自己的位置。</span><span>本地处理 · 无遥测 · 无账号服务</span></footer>
+    <input id="import-file" type="file" accept=".srt,.lrc" hidden>
+  </main>
+  <script type="module" src="demo.js"></script>
+</body>
+</html>

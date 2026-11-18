@@ -1,0 +1,39 @@
+.sl-settings { --accent: #9be9d6; color: #ecf0f5; font: 13px/1.5 "Segoe UI", "Microsoft YaHei", sans-serif; }
+.sl-settings *, .sl-settings *::before, .sl-settings *::after { box-sizing: border-box; }
+.sl-settings [hidden] { display: none !important; }
+.sl-settings button, .sl-settings input, .sl-settings select { font: inherit; }
+.sl-settings button { cursor: pointer; color: inherit; }
+.sl-settings button:focus-visible, .sl-settings input:focus-visible, .sl-settings select:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; }
+.sl-settings svg { width: 15px; height: 15px; flex: none; }
+.sl-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 0; cursor: pointer; }
+.sl-toggle-row > span { font-weight: 500; }
+.sl-toggle-row small { display: block; color: #8591a2; margin-top: 3px; font-size: 11px; font-weight: 400; }
+.sl-switch { appearance: none; position: relative; width: 34px; height: 20px; border: 1px solid #4b5565; border-radius: 20px; background: #343c49; flex: none; cursor: pointer; margin: 0; }
+.sl-switch::before { content: ""; position: absolute; left: 3px; top: 3px; width: 12px; height: 12px; background: #9aa5b3; border-radius: 50%; transition: transform 180ms; }
+.sl-switch:checked { background: var(--accent); border-color: var(--accent); }
+.sl-switch:checked::before { transform: translateX(14px); background: #102b29; }
+.sl-tabs { display: grid; grid-template-columns: repeat(3, 1fr); padding: 4px; margin: 16px 0 22px; background: #0a1017; border: 1px solid #ffffff09; border-radius: 11px; gap: 4px; }
+.sl-tabs button { background: none; border: 0; padding: 7px 8px; border-radius: 7px; color: #8995a5; font-size: 12px; }
+.sl-tabs button[aria-selected="true"] { background: #27333c; color: #dbf8ee; box-shadow: 0 2px 5px #0002; }
+.sl-field { display: block; margin: 0 0 23px; }
+.sl-field > span { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; color: #c8d0da; font-size: 12px; }
+.sl-field output { color: var(--accent); font-size: 12px; font-variant-numeric: tabular-nums; }
+.sl-field input[type="range"] { appearance: none; display: block; width: 100%; height: 4px; margin: 10px 0 4px; border: 0; border-radius: 8px; background: linear-gradient(to right, var(--accent) 0 var(--sl-fill, 50%), #323d4a var(--sl-fill, 50%) 100%); cursor: pointer; }
+.sl-field input[type="range"]::-webkit-slider-thumb { appearance: none; width: 12px; height: 12px; border-radius: 50%; background: #d5fff1; box-shadow: 0 0 0 3px #9be9d617; }
+.sl-segments { display: grid; grid-template-columns: repeat(3, 1fr); background: #121a24; border: 1px solid #ffffff12; border-radius: 9px; padding: 3px; gap: 3px; }
+.sl-segments button { font-size: 11px; padding: 8px 0; background: none; border: 0; border-radius: 6px; color: #8f9cab; }
+.sl-segments button[aria-pressed="true"] { background: #9be9d614; color: var(--accent); }
+.sl-field select { width: 100%; padding: 9px 11px; border: 1px solid #ffffff18; color: #d7dee7; background: #121a24; border-radius: 8px; color-scheme: dark; }
+.sl-field select:disabled { color: #8090a0; }
+.sl-help { display: block; color: #7e8c9f; font-size: 11px; margin-top: 12px; }
+.sl-offset { display: flex; align-items: center; gap: 14px; }
+.sl-offset button { flex: none; border: 1px solid #ffffff14; border-radius: 8px; background: #202c37; width: 30px; height: 30px; font-size: 18px; }
+.sl-offset input[type="range"] { margin: 0; }
+.sl-actions { display: flex; gap: 9px; margin-top: 6px; }
+.sl-actions button { display: flex; align-items: center; justify-content: center; gap: 7px; flex: 1; background: #24313c; border: 1px solid #ffffff0d; border-radius: 8px; padding: 9px 10px; font-size: 12px; }
+.sl-actions button:hover, .sl-offset button:hover { background: #31434c; }
+.sl-text-button { display: block; width: 100%; color: #91b1aa !important; border: 0; background: none; padding: 12px 0 3px; font-size: 11px !important; text-align: center; }
+.sl-shortcuts { border-top: 1px solid #ffffff0b; padding-top: 12px; color: #81909f; font-size: 11px; }
+.sl-shortcuts span { display: flex; justify-content: space-between; margin: 6px 0; }
+.sl-shortcuts kbd { font: 10px "Segoe UI", sans-serif; color: #acb8c6; background: #ffffff08; padding: 2px 6px; border-radius: 4px; }
+@media (prefers-reduced-motion: reduce) { .sl-settings *, .sl-settings *::before { transition: none !important; } }

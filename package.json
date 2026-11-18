@@ -1,0 +1,11 @@
+{
+  "name": "bilisidelyric",
+  "version": "1.0.3",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "demo": "node tools/serve.mjs",
+    "check": "node tools/check.mjs"
+  }
+}

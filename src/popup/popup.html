@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>旁白 SideLyric</title>
+  <link rel="stylesheet" href="../styles/settings.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="brand">
+    <div class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div><h1>旁白<span>SideLyric</span></h1><p>让字幕，像歌词一样流动。</p></div>
+    <span class="version">1.0.3</span>
+  </header>
+  <main>
+    <section class="now-playing" aria-label="当前视频状态">
+      <div class="eyebrow"><span class="status-dot"></span><span id="connection">等待连接视频</span><span id="source-badge">BILIBILI</span></div>
+      <h2 id="video-title">把此刻，留给这一句。</h2>
+      <p id="video-detail" role="status">在 B 站打开视频，旁白会自动寻找字幕。</p>
+      <div class="mini-lyrics" aria-hidden="true"><span>让画面继续</span><strong>让每一句，清晰地被看见</strong><span>下一句，正在靠近</span><div class="mini-wave"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    </section>
+    <div id="settings"></div>
+    <div id="notice" role="status" hidden></div>
+    <input id="file" type="file" accept=".srt,.lrc" hidden>
+  </main>
+  <footer><span class="sync-mark">●</span> 设置自动同步 <span>每一句，都有自己的位置。</span></footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+* { box-sizing: border-box; }
+body { margin: 0; background: #0b1118; color: #e8eef1; font: 14px/1.6 "Segoe UI", "Microsoft YaHei", sans-serif; color-scheme: dark; }
+button, input { font: inherit; }button { cursor: pointer; }
+.site-header { height: 88px; max-width: 1440px; margin: auto; padding: 0 54px; display: flex; align-items: center; gap: 42px; border-bottom: 1px solid #ffffff0a; }
+.wordmark { display: flex; align-items: center; gap: 10px; color: #edf5f2; text-decoration: none; font-size: 22px; font-weight: 600; letter-spacing: 2px; }
+.wordmark img { width: 34px; height: 34px; }.wordmark > span { font-size: 10px; font-weight: 400; letter-spacing: 3px; color: #839d9c; margin-left: 6px; }
+.header-note { color: #687d88; font-size: 11px; letter-spacing: 1px; }
+.edge-badge { margin-left: auto; display: flex; align-items: center; gap: 7px; border: 1px solid #9be9d61a; background: #9be9d607; padding: 6px 11px; border-radius: 6px; color: #9bb5af; font-size: 10px; }
+.edge-badge i { width: 5px; height: 5px; border-radius: 50%; background: #9be9d6; }
+main { max-width: 1440px; padding: 0 54px; margin: auto; }
+.intro { display: flex; align-items: flex-end; justify-content: space-between; padding: 42px 0 32px; }
+.eyebrow { font-size: 9px; letter-spacing: 3px; color: #7fa99e; margin-bottom: 14px; }
+h1 { font-size: clamp(24px, 2.5vw, 36px); font-weight: 500; letter-spacing: 1px; margin: 0; line-height: 1.5; }h1 > span { color: #a3d5c7; }
+.intro p { margin: 12px 0 0; font-size: 12px; color: #7c8e9e; letter-spacing: .6px; }
+.intro-tag { font-size: 10px; color: #647d84; letter-spacing: 1px; padding-bottom: 2px; }
+.workspace { display: grid; grid-template-columns: minmax(0, 1fr) 302px; gap: 24px; align-items: start; }
+.watch { min-width: 0; }.player-shell { position: relative; aspect-ratio: 16 / 10; background: #0b131a; border: 1px solid #ffffff12; border-radius: 15px; overflow: hidden; box-shadow: 0 18px 70px #0003; }
+.bpx-player-video-area { position: absolute; inset: 0; overflow: hidden; }.bpx-player-video-area video { display: none; }
+.landscape { position: absolute; inset: 0; width: 100%; height: 100%; }.scene-shade { position: absolute; inset: 0; background: linear-gradient(90deg, #061c2b30, transparent 45%), linear-gradient(0deg, #06121c9c, transparent 20%); }
+.scene-label { position: absolute; top: 24px; right: 28px; font-size: 8px; color: #d5eadab3; letter-spacing: 3px; }.scene-label span { margin: 0 5px; opacity: .4; }
+.scene-type { position: absolute; right: 20%; top: 18%; color: #e6ecd0; text-align: center; }.scene-type > span { display: block; font-size: 9px; letter-spacing: 6px; margin-bottom: 13px; color: #dfedceaa; }
+.scene-type strong { display: block; position: relative; font: 500 clamp(44px, 4.6vw, 70px)/1.12 "SimSun", "Noto Serif SC", serif; letter-spacing: 5px; text-shadow: 0 4px 30px #1f463933; }.scene-type strong > span { position: absolute; bottom: -1px; font-size: 38px; }
+.scene-type small { display: block; font-size: 7px; letter-spacing: 3px; color: #dce6d09c; margin-top: 22px; }
+.demo-controls { position: absolute; left: 18px; right: 18px; bottom: 10px; z-index: 20; display: flex; align-items: center; gap: 12px; height: 32px; color: #d7e3e1; }
+.demo-controls button { width: 26px; height: 28px; border: 0; background: none; color: #edf7ed; font-size: 18px; padding: 0; }.demo-controls > span { font-size: 9px; font-variant-numeric: tabular-nums; }
+.demo-controls input { flex: 1; appearance: none; height: 3px; border-radius: 4px; background: #dae9df33; accent-color: #b2ebd8; cursor: pointer; }.demo-controls input::-webkit-slider-thumb { appearance: none; height: 8px; width: 8px; border-radius: 50%; background: #c6f1df; }
+.video-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 19px; }.video-meta h2 { margin: 0; font-size: 14px; font-weight: 500; letter-spacing: .3px; }.video-meta p { display: flex; gap: 8px; align-items: center; color: #657d86; font-size: 10px; margin: 9px 0 0; }.demo-dot { width: 5px; height: 5px; border-radius: 50%; background: #89bdab; }
+.long-demo { flex: none; border: 1px solid #9be9d61a; color: #a6c5ba; background: #9be9d608; border-radius: 7px; padding: 8px 12px; font-size: 10px; }.long-demo > span { margin-left: 12px; }.long-demo:hover { background: #9be9d617; }
+.feature-row { display: flex; gap: 28px; margin-top: 25px; border-top: 1px solid #ffffff0a; padding-top: 19px; font-size: 10px; color: #728993; }.feature-row b { font: 10px/1 "Segoe UI", sans-serif; color: #74a595; margin-right: 6px; }
+aside { border: 1px solid #ffffff0c; background: #121b25; border-radius: 14px; padding: 20px 20px 17px; }.aside-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }.aside-heading > span { font-size: 13px; font-weight: 500; }.aside-heading > small { font-size: 7px; letter-spacing: 1.8px; color: #70998f; }.aside-note { font-size: 9px; color: #5f7b84; line-height: 1.9; border-top: 1px solid #ffffff08; margin-top: 18px; padding-top: 15px; }
+main > footer { display: flex; justify-content: space-between; padding: 38px 0 26px; font-size: 9px; color: #516774; }main > footer > span:first-child { color: #7b9598; letter-spacing: 1px; }
+.player-shell:fullscreen { width: 100vw; height: 100vh; border: 0; border-radius: 0; aspect-ratio: auto; }.player-shell:fullscreen .scene-type { right: 25%; top: 22%; }.player-shell:fullscreen .scene-type strong { font-size: 110px; }
+@media (max-width: 1000px) { .site-header, main { padding-left: 24px; padding-right: 24px; }.header-note, .intro-tag { display: none; }.workspace { grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; }.feature-row { gap: 12px; }.scene-type { right: 10%; }.scene-type > span { letter-spacing: 2px; }.long-demo { display: none; } }
+@media (max-width: 740px) { .workspace { grid-template-columns: 1fr; }.intro { padding-top: 28px; }.wordmark > span { display: none; }.feature-row { justify-content: space-between; }.scene-type strong { font-size: 48px; }.scene-type small { margin-top: 12px; }main > footer > span:last-child { display: none; } }

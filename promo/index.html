@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>旁白 · 宣传片</title><link rel="icon" href="../assets/icon-32.png"><link rel="stylesheet" href="../src/styles/settings.css"><link rel="stylesheet" href="promo.css"></head>
+<body>
+  <div class="film-frame"><main class="stage" aria-label="旁白宣传片">
+    <div class="ambient ambient-one"></div><div class="ambient ambient-two"></div><div class="grid-texture"></div>
+    <header class="masthead"><a href="../demo/index.html"><img src="../assets/mark.svg" alt="旁白标志">旁白<span>SIDELYRIC</span></a><span>EDGE EXTENSION <b>／</b> 1.0.3</span></header>
+    <section class="slide cover active" data-scene="0"><div class="cover-icon"><img src="../assets/mark.svg" alt=""></div><p class="eyebrow anim">A LITTLE SPACE FOR EVERY WORD</p><h1 class="anim">让字幕，<br><em>像歌词一样流动。</em></h1><p class="cover-copy anim">旁白 SideLyric <span>为 B 站，打开另一种观看方式。</span></p></section>
+    <section class="slide pain" data-scene="1"><p class="eyebrow anim">WATCH MORE. LOOK AROUND LESS.</p><h2 class="anim">好画面，不该被<br><em>来回寻找字幕</em>打断。</h2><div class="gaze-map anim"><span class="gaze first">画面</span><span class="gaze-path"></span><span class="gaze last">字幕</span><span class="gaze-note">把注意力，留给正在发生的故事。</span></div></section>
+    <section class="slide feature" data-scene="2"><p class="eyebrow anim">01 / LYRICS THAT FOLLOW YOUR STORY</p><h2 class="anim">这一句，<em>刚好在眼前。</em></h2><p class="description anim">当前句高亮。前后文展开。随视频自然上移。</p></section>
+    <section class="slide feature" data-scene="3"><p class="eyebrow anim">02 / EVERY SECOND HAS A POSITION</p><h2 class="anim">长句，也有<em>自己的节奏。</em></h2><p class="description anim">播放向前，阅读向前。暂停时，文字也停住。</p></section>
+    <section class="slide feature" data-scene="4"><p class="eyebrow anim">03 / REWIND THE VIDEO. REWIND THE WORDS.</p><h2 class="anim">回退五秒，<em>一句也不丢。</em></h2><p class="description anim">进度与横向位置一一对应，快进回退都跟得上。</p><div class="rewind-tag">↶ −5s</div></section>
+    <section class="slide feature" data-scene="5"><p class="eyebrow anim">04 / YOUR SPACE. YOUR ALIGNMENT.</p><h2 class="anim">靠哪边，<em>都合你心意。</em></h2><p class="description anim">歌词位置靠左或靠右。文字左对齐、居中、右对齐。</p><div class="alignment-pill">靠右 <span>·</span> 居中对齐</div></section>
+    <section class="slide feature" data-scene="6"><p class="eyebrow anim">05 / MAKE IT FEEL LIKE YOURS</p><h2 class="anim">你的观看方式，<em>自己调。</em></h2><p class="description anim">字号、透明度、时间偏移。SRT / LRC 本地导入。</p><div class="settings-card"><div class="settings-title">为此刻，调到刚好。<span>LIVE PREVIEW</span></div><div id="film-settings"></div></div></section>
+    <section class="slide ending" data-scene="7"><p class="eyebrow anim">MEET YOUR NEW WAY TO WATCH</p><h2 class="anim">每一句，<br><em>都有自己的位置。</em></h2><div class="install-steps anim"><span><b>01</b> 下载扩展</span><i>→</i><span><b>02</b> Edge 加载解压目录</span><i>→</i><span><b>03</b> 打开 B 站视频</span></div><a class="repo-address anim" href="https://github.com/AFNW7/BiliSideLyric">github.com/AFNW7/BiliSideLyric <span>↗</span></a><div class="ending-badges anim"><span>原生轻量</span><span>无遥测</span><span>开源代码</span></div></section>
+    <div class="product" id="product"><div class="browser-bar"><div><i></i><i></i><i></i></div><span>bilibili.com / video</span><span>旁白已连接 <b>●</b></span></div><div class="bpx-player-video-area" id="film-player"><video hidden></video><div class="landscape-mount"></div><div class="scene-vignette"></div><div class="film-scene-type"><small>给忙碌一点留白</small><strong>慢一点。</strong><span>STAY IN THE MOMENT</span></div><div class="film-controls"><span>Ⅱ</span><span id="film-clock">00:00</span><div class="seek-track"><div class="seek-fill"></div><i></i></div><span>01:00</span><span>⛶</span></div></div><div class="product-label"><span>真实渲染器 · 内置示例字幕</span><span>SideLyric 1.0.3</span></div></div>
+    <div class="narration-caption" aria-live="off"></div><div class="film-bottom"><span>BILISIDELYRIC</span><div class="scene-progress"></div><span class="time-label">00:00 / 00:52</span></div>
+    <nav class="dots" aria-label="分镜导航"></nav>
+  </main></div>
+  <div class="controls"><button id="play" aria-label="暂停宣传片">暂停</button><input id="timeline" aria-label="宣传片进度" type="range" min="0" max="51.99" step="0.01" value="0"><span id="counter">1 / 8</span><button id="restart">重播</button></div>
+  <script type="module" src="promo.js"></script>
+</body></html>

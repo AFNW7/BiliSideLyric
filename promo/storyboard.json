@@ -1,0 +1,17 @@
+{
+  "title": "旁白 SideLyric · 每一句，都有自己的位置",
+  "duration": 52,
+  "width": 1920,
+  "height": 1080,
+  "fps": 24,
+  "scenes": [
+    { "start": 0, "end": 6, "name": "开场", "narration": "旁白，让 B 站字幕，像歌词一样流动。" },
+    { "start": 6, "end": 12, "name": "观看痛点", "narration": "看画面，读字幕。目光，不必再来回奔忙。" },
+    { "start": 12, "end": 19, "name": "歌词字幕", "narration": "当前一句，清晰高亮。前后文，在身边自然展开。" },
+    { "start": 19, "end": 26, "name": "长句同步", "narration": "长句跟随播放，单向推进。暂停，就停在此刻。" },
+    { "start": 26, "end": 32, "name": "快进回退", "narration": "回退五秒，文字也回到对应的位置。" },
+    { "start": 32, "end": 39, "name": "自由对齐", "narration": "靠左，靠右。文字居中，或者对齐。由你决定。" },
+    { "start": 39, "end": 45, "name": "专属设置", "narration": "调字号，改透明度，还能导入自己的字幕。" },
+    { "start": 45, "end": 52, "name": "安装收尾", "narration": "打开 Edge，加载旁白。每一句，都有自己的位置。" }
+  ]
+}
