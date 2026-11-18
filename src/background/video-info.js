@@ -11,11 +11,12 @@ export async function resolveVideo(href, hint = {}) {
   const episode = url.pathname.match(/^\/bangumi\/play\/(ep|ss)(\d+)/);
   const page = Math.max(1, Math.floor(Number(url.searchParams.get('p')) || 1));
   if (bvid || avid) {
-    if ((hint.bvid === bvid || String(hint.aid) === avid) && hint.page === page && positive(hint.aid) && positive(hint.cid)) return hint;
+    if (((bvid && hint.bvid === bvid) || (avid && String(hint.aid) === avid)) && hint.page === page && positive(hint.aid) && positive(hint.cid)) return hint;
     const query = bvid ? `bvid=${encodeURIComponent(bvid)}` : `aid=${avid}`;
     const response = await fetchJSON(`https://api.bilibili.com/x/web-interface/view?${query}`);
     if (response.code !== 0 || !response.data) throw new Error(response.message || '暂时无法读取视频信息');
     const data = response.data;
+    if ((bvid && data.bvid !== bvid) || (avid && String(data.aid) !== avid)) throw new Error('视频信息与当前页面不符，请刷新后重试');
     const part = data.pages?.find(item => item.page === page) || data.pages?.[page - 1];
     if (!part?.cid) throw new Error('没有找到当前分 P，请刷新后重试');
     return { aid: data.aid, bvid: data.bvid, cid: part.cid, title: page > 1 ? `${data.title} · ${part.part}` : data.title, page };

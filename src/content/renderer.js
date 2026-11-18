@@ -29,6 +29,7 @@ export class Renderer {
 
   attach(video) {
     this.video = video;
+    this.ui.mountNotice(video);
     const mount = getMount(video);
     if (this.host.parentElement !== mount.parent) mount.parent.append(this.host);
     this.mount = mount;
@@ -89,6 +90,7 @@ export class Renderer {
 
   render(time, force = false) {
     this.lastTime = time;
+    this.ui.syncNotice();
     const state = cueState(this.cues, time + this.settings.offsetSec, this.index);
     const unavailable = !!document.pictureInPictureElement || (this.settings.hideInFullscreen && isFullscreen());
     this.ui.root.classList.toggle('sl-suppressed', unavailable);

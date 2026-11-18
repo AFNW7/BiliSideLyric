@@ -33,7 +33,7 @@ await context.route('https://api.bilibili.com/**', route => route.fulfill({
       img_url: 'https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png',
       sub_url: 'https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png'
     } }
-  } : { code: 0, data: { subtitle: { subtitles: [{ id: 1, lan: 'ai-zh', lan_doc: 'AI 中文', subtitle_url: address }] } } }
+  } : { code: 0, data: { cid: 279786, subtitle: { subtitles: [{ id: 1, lan: 'ai-zh', lan_doc: 'AI 中文', subtitle_url: address }] } } }
 }));
 await context.route('https://*.hdslb.com/**', route => {
   const worker = !!route.request().serviceWorker();
@@ -86,7 +86,7 @@ try {
     requests.length = 0;
     address = 'https://invalid.example/subtitle';
     await page.reload();
-    await page.locator('#sidelyric-root .sl-hint strong').filter({ hasText: '已找到字幕，但读取失败' }).waitFor();
+    await page.locator('#sidelyric-notice .sl-hint strong').filter({ hasText: '已找到字幕，但读取失败' }).waitFor();
     const state = await status();
     assert.equal(state.phase, 'error');
     assert.ok(!state.detail.includes('自动重试'));

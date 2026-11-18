@@ -31,16 +31,9 @@
 .sl-toolbar-divider { width: 1px; height: 14px; background: #ffffff16; margin: 0 3px; }
 .sl-toolbar .sl-drag { cursor: ew-resize; touch-action: none; color: #8293a3; }
 .sl-controls-visible .sl-toolbar, .sl-panel-open .sl-toolbar, .sl-toolbar:focus-within { opacity: 1; pointer-events: auto; }
-.sl-hint { position: absolute; bottom: 64px; left: var(--sl-edge, 24px); display: flex; gap: 10px; max-width: min(360px, calc(100% - 40px)); padding: 14px 16px; background: #0d1729eb; border: 1px solid #ffffff14; border-radius: 13px; box-shadow: 0 8px 30px #0003; pointer-events: auto; }
-.sl-hint-mark { color: #9be9d6; padding-top: 1px; }
-.sl-hint strong { font-size: 12px; font-weight: 500; }
-.sl-hint small { display: block; margin: 5px 0; font-size: 10px; color: #97a8bb; }
-.sl-hint button { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; padding: 5px 8px 0 0; background: none; color: #a3e6d5; }
-.sl-hint button svg { width: 12px; height: 12px; }
-.sl-root:not(.sl-enabled) .sl-hint, .sl-panel-open .sl-hint { display: none; }
 .sl-panel { position: absolute; z-index: 3; top: 55px; left: max(10px, min(var(--sl-edge, 24px), calc(100% - 340px))); width: min(324px, calc(100% - 20px)); max-height: calc(100% - 75px); display: flex; flex-direction: column; border: 1px solid #ffffff1c; border-radius: 15px; background: #111923fa; box-shadow: 0 16px 60px #0006; overflow: hidden; pointer-events: auto; }
 .sl-root[data-placement="right"] .sl-backdrop { left: auto; right: 0; transform: scaleX(-1); }
-.sl-root[data-placement="right"] .sl-toolbar, .sl-root[data-placement="right"] .sl-hint { left: auto; right: var(--sl-edge, 24px); }
+.sl-root[data-placement="right"] .sl-toolbar { left: auto; right: var(--sl-edge, 24px); }
 .sl-root[data-placement="right"] .sl-panel { left: auto; right: max(10px, min(var(--sl-edge, 24px), calc(100% - 340px))); }
 .sl-panel header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid #ffffff0a; flex: none; }
 .sl-panel header > span { display: flex; align-items: center; gap: 7px; font-size: 14px; font-weight: 600; }

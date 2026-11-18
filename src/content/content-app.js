@@ -25,6 +25,7 @@ export async function start() {
       else if (name === 'retry') await source.start();
       else if (name === 'track') await source.select(value);
       else if (name === 'restore') await source.restore();
+      else if (name === 'capture') source.enableDOM();
       else if (name === 'import-file') await source.importFile(value);
     } catch (error) { source.update({ phase: 'error', message: error.message, detail: '请换一个字幕文件，或重新获取在线字幕' }); }
   };
@@ -36,7 +37,7 @@ export async function start() {
     videoEvents?.abort();
     videoEvents = new AbortController();
     video = next;
-    if (!video) { renderer.host.remove(); return; }
+    if (!video) { renderer.host.remove(); renderer.ui.notice.remove(); return; }
     renderer.attach(video);
     for (const name of ['loadedmetadata', 'resize', 'enterpictureinpicture', 'leavepictureinpicture']) {
       video.addEventListener(name, () => renderer.attach(video), { signal: videoEvents.signal });
@@ -53,6 +54,7 @@ export async function start() {
     const next = getVideo();
     if (next !== video) bind(next);
     else if (video && (!renderer.host.isConnected || renderer.mount?.parent !== renderer.host.parentElement)) renderer.attach(video);
+    if (video) renderer.ui.mountNotice(video);
     const nextKey = pageKey();
     const nextIdentity = getDOMIdentity();
     if (nextKey !== key || (identity && nextIdentity && nextIdentity !== identity)) {
@@ -61,7 +63,7 @@ export async function start() {
       source.start();
     }
     identity = nextIdentity;
-    if (video) source.capture(getDOMSubtitle(), video.currentTime);
+    if (video && source.domAllowed) source.capture(getDOMSubtitle(video), video.currentTime);
   }
   function schedule() { clearTimeout(checkTimer); checkTimer = setTimeout(check, 120); }
   const observer = new MutationObserver(schedule);
@@ -83,7 +85,10 @@ export async function start() {
   }, 2000);
   function tick() {
     if (destroyed) return;
-    if (video && !document.hidden) renderer.render(video.currentTime);
+    if (video && !document.hidden) {
+      if (!source.isCurrent()) { if (renderer.cues.length) renderer.setTimeline([]); }
+      else renderer.render(video.currentTime);
+    }
     frame = requestAnimationFrame(tick);
   }
   document.addEventListener('fullscreenchange', () => { if (video) renderer.attach(video); }, { signal: lifetime.signal });

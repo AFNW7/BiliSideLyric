@@ -1,5 +1,6 @@
 import { createSettingsView } from '../shared/settings-view.js';
 import { icon } from '../shared/icons.js';
+import { getNoticeAnchor, isFullscreen } from './selectors.js';
 
 export class OverlayUI {
   constructor(shadow, settings, handlers) {
@@ -16,7 +17,7 @@ export class OverlayUI {
         <button type="button" data-action="toggle" aria-label="显示或隐藏歌词" title="显示 / 隐藏 · Alt+L">${icon('eye')}</button>
         <button type="button" class="sl-drag" aria-label="拖动调整边缘留白，双击复位" title="拖动调整边缘留白 · 双击复位">${icon('grip')}</button>
       </div>
-      <div class="sl-hint" role="status"><span class="sl-hint-mark">${icon('mark')}</span><div><strong></strong><small></small><button type="button" data-action="retry">重新获取 ${icon('refresh')}</button><button type="button" data-action="import">导入字幕</button></div></div>
+      <div class="sl-hint" role="status"><span class="sl-hint-mark">${icon('mark')}</span><div class="sl-hint-copy"><strong></strong><small></small></div><div class="sl-hint-actions"><button type="button" data-action="retry">重新获取</button><button type="button" data-action="capture">采集已开启字幕</button><button type="button" data-action="import">导入字幕</button></div></div>
       <section class="sl-panel" aria-label="旁白设置" hidden>
         <header><span>${icon('mark')} 旁白 <small>SIDELYRIC</small></span><button type="button" data-action="close" aria-label="关闭设置">${icon('close')}</button></header>
         <div class="sl-panel-scroll"><div class="sl-panel-status" role="status"></div><div class="sl-settings-mount"></div></div>
@@ -29,6 +30,18 @@ export class OverlayUI {
     this.viewport = root.querySelector('.sl-viewport');
     this.track = root.querySelector('.sl-track');
     this.hint = root.querySelector('.sl-hint');
+    this.notice = document.createElement('div');
+    this.notice.id = 'sidelyric-notice';
+    this.notice.style.cssText = 'display:none!important;position:relative!important;clear:both!important;max-width:100%!important;margin:10px 0!important;';
+    const noticeShadow = this.notice.attachShadow({ mode: 'open' });
+    const noticeStyle = document.createElement('link');
+    noticeStyle.rel = 'stylesheet';
+    noticeStyle.href = new URL('../styles/notice.css', import.meta.url).href;
+    noticeShadow.append(noticeStyle, this.hint);
+    this.hint.addEventListener('click', event => {
+      const button = event.target.closest('[data-action]');
+      if (button) this.action(button.dataset.action);
+    });
     this.view = createSettingsView(root.querySelector('.sl-settings-mount'), {
       settings, onPreview: handlers.onPreview, onCommit: handlers.onCommit,
       onAction: (action, value) => this.action(action, value)
@@ -89,14 +102,31 @@ export class OverlayUI {
     }, 3000);
   }
 
-  updateSettings(settings) { this.settings = settings; this.view.updateSettings(settings); }
+  mountNotice(video) {
+    const player = getNoticeAnchor(video);
+    if (player?.parentNode && this.notice.previousElementSibling !== player) player.after(this.notice);
+    if (player) this.notice.style.setProperty('width', `${player.getBoundingClientRect().width}px`, 'important');
+    this.syncNotice();
+  }
+
+  syncNotice() {
+    const show = !!this.settings.enabled && !!this.status && this.status.phase !== 'ready' && !isFullscreen() && !document.pictureInPictureElement;
+    if (this.noticeShown === show) return;
+    this.noticeShown = show;
+    this.notice.style.setProperty('display', show ? 'block' : 'none', 'important');
+  }
+
+  updateSettings(settings) { this.settings = settings; this.view.updateSettings(settings); this.syncNotice(); }
   updateStatus(status) {
+    this.status = status;
     this.view.updateStatus(status);
     this.root.querySelector('.sl-panel-status').textContent = `${status.source || status.message}${status.count ? ` · ${status.count} 句` : ''}`;
     this.hint.querySelector('strong').textContent = status.message || '';
     this.hint.querySelector('small').textContent = status.detail || '';
     this.hint.hidden = status.phase === 'ready';
     this.hint.querySelector('[data-action="retry"]').hidden = status.phase === 'loading';
+    this.hint.querySelector('[data-action="capture"]').hidden = !['empty', 'error'].includes(status.phase) || status.source === '实时采集';
+    this.syncNotice();
   }
-  destroy() { clearTimeout(this.idleTimer); }
+  destroy() { clearTimeout(this.idleTimer); this.notice.remove(); }
 }

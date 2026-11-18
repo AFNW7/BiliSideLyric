@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $taskRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $releaseRoot = Join-Path $taskRoot 'release'
-$version = (Get-Content -LiteralPath (Join-Path $taskRoot 'manifest.json') -Raw | ConvertFrom-Json).version
+$version = (Get-Content -LiteralPath (Join-Path $taskRoot 'manifest.json') -Raw -Encoding UTF8 | ConvertFrom-Json).version
 $stagingRoot = Join-Path $releaseRoot "SideLyric-$version"
 $archivePath = Join-Path $releaseRoot "SideLyric-$version.zip"
 if (Test-Path -LiteralPath $stagingRoot) {

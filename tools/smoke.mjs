@@ -33,7 +33,7 @@ await context.route('https://api.bilibili.com/**', route => {
   const cid = Number(url.searchParams.get('cid')) || 279786;
   const body = url.pathname.endsWith('/nav') ? { code: 0, data: { wbi_img: { img_url: 'https://i0.hdslb.com/bfs/wbi/7cd084941338484aae1ad9425b84077c.png', sub_url: 'https://i0.hdslb.com/bfs/wbi/4932caff0ff746eab6f01bf08b70ac45.png' } } } :
     url.pathname.includes('/season') ? { code: 0, result: { title: '番剧', episodes: [{ id: 12, aid: 170002, cid: 279788, bvid: 'BVtest', title: '2' }] } } :
-      { code: 0, data: { subtitle: { subtitles: noTracks ? [] : [{ id: 1, lan: 'ai-zh', lan_doc: `AI 中文 · ${cid}`, subtitle_url: `//aisubtitle.hdslb.com/bfs/ai_subtitle/prod/${cid}?auth_key=1795000000-0-0-signature` }] } } };
+      { code: 0, data: { cid, subtitle: { subtitles: noTracks ? [] : [{ id: 1, lan: 'ai-zh', lan_doc: `AI 中文 · ${cid}`, subtitle_url: `//aisubtitle.hdslb.com/bfs/ai_subtitle/prod/${cid}?auth_key=1795000000-0-0-signature` }] } } };
   return route.fulfill({ json: body, headers: { 'access-control-allow-origin': 'https://www.bilibili.com', 'access-control-allow-credentials': 'true' } });
 });
 await context.route('https://*.hdslb.com/**', route => route.fulfill({ json: { body: cues }, headers: { 'access-control-allow-origin': 'https://www.bilibili.com', 'access-control-allow-credentials': 'true' } }));
@@ -177,11 +177,12 @@ try {
     await current.waitFor();
     assert.equal((await getStatus()).source, 'AI 中文 · 279788');
   });
-  await check('无字幕提示、DOM 实时兜底与 SRT 导入', async () => {
+  await check('播放器外提示、手动 DOM 采集与 SRT 导入', async () => {
     noTracks = true;
     await navigate('https://www.bilibili.com/video/BV17x411w7KC');
-    await page.locator('#sidelyric-root .sl-hint strong').filter({ hasText: '开启 AI 字幕' }).waitFor();
+    await page.locator('#sidelyric-notice .sl-hint strong').filter({ hasText: '开启 AI 字幕' }).waitFor();
     await page.evaluate(() => { document.querySelector('.bpx-player-subtitle-panel-text').textContent = '播放器实时字幕'; });
+    await page.locator('#sidelyric-notice [data-action="capture"]').click();
     await current.filter({ hasText: '播放器实时字幕' }).waitFor();
     await page.locator('#sidelyric-root .sl-brand-button').click();
     const file = page.locator('#sidelyric-root .sl-file');
@@ -227,7 +228,7 @@ try {
 } catch (error) {
   if (page && !page.isClosed()) {
     await page.screenshot({ path: join(output, 'failure.png') });
-    console.error(await page.locator('#sidelyric-root').evaluate(node => ({ current: node.shadowRoot.querySelector('.is-current')?.textContent, hint: node.shadowRoot.querySelector('.sl-hint')?.textContent })).catch(() => 'overlay missing'));
+    console.error(await page.locator('#sidelyric-root').evaluate(node => ({ current: node.shadowRoot.querySelector('.is-current')?.textContent, hint: document.querySelector('#sidelyric-notice')?.shadowRoot.querySelector('.sl-hint')?.textContent })).catch(() => 'overlay missing'));
   }
   throw error;
 } finally {

@@ -28,7 +28,18 @@ try {
         }
         return null;
       });
-      reports.push({ url, title: await page.title(), status, extensionErrors: [...errors] });
+      const notice = await page.evaluate(() => {
+        const host = document.querySelector('#sidelyric-notice');
+        const player = document.querySelector('#bilibili-player');
+        const bounds = host?.getBoundingClientRect();
+        return {
+          visible: !!host?.checkVisibility(),
+          insidePlayer: !!player?.contains(host),
+          top: bounds?.top, playerBottom: player?.getBoundingClientRect().bottom,
+          overlayHint: !!document.querySelector('#sidelyric-root')?.shadowRoot.querySelector('.sl-hint')
+        };
+      });
+      reports.push({ url, title: await page.title(), status, notice, extensionErrors: [...errors] });
       await page.screenshot({ path: join(root, 'test-results', `live-${reports.length}.png`) });
     } catch (error) { reports.push({ url, error: error.message }); }
     console.info(JSON.stringify(reports.at(-1)));
