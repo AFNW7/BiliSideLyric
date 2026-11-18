@@ -47,6 +47,7 @@ let playing = !exported;
 let previous = performance.now();
 const clamp = value => Math.max(0, Math.min(1, value));
 const clock = time => `${Math.floor(time / 60).toString().padStart(2, '0')}:${Math.floor(time % 60).toString().padStart(2, '0')}`;
+timeline.max = script.duration - .01;
 for (const [index, scene] of script.scenes.entries()) {
   const dot = document.createElement('button');
   dot.setAttribute('aria-label', `${index + 1}：${scene.name}`);
@@ -76,13 +77,13 @@ function seek(time) {
   }
   animations[index].forEach(animation => { animation.currentTime = local * 1000; });
   productAnimation.currentTime = local * 1000;
-  const placement = index === 5 && local >= 2 ? 'right' : 'left';
-  const textAlign = index === 5 ? local >= 5 ? 'right' : local >= 3.4 ? 'center' : 'left' : 'left';
-  const fontSize = index === 6 ? 28 + Math.min(8, Math.floor(local * 2)) : 28;
-  updateSettings(normalizeSettings({ ...settings, placement, textAlign, fontSize, opacity: index === 6 && local >= 3.8 ? 0.7 : 0.95 }));
-  let videoTime = 1 + local * 2.15;
-  if (index === 3) videoTime = 20 + Math.min(local, 5) * 2.4;
-  if (index === 4) videoTime = local < 2 ? 28 + local * 1.5 : local < 3.1 ? 26 : 26 + (local - 3.1) * 1.4;
+  const placement = index === 5 && local >= .9 ? 'right' : 'left';
+  const textAlign = index === 5 ? local >= 2.8 ? 'right' : local >= 1.8 ? 'center' : 'left' : 'left';
+  const fontSize = index === 6 ? 28 + Math.min(8, Math.floor(local * 4)) : 28;
+  updateSettings(normalizeSettings({ ...settings, placement, textAlign, fontSize, opacity: index === 6 && local >= 1.7 ? 0.7 : 0.95 }));
+  let videoTime = 1 + local * 3.2;
+  if (index === 3) videoTime = 20 + (Math.min(local, 1.4) + Math.max(0, local - 2.2)) * 3.4;
+  if (index === 4) videoTime = local < 1 ? 30 + local : local < 1.6 ? 26 : 26 + (local - 1.6) * 1.8;
   if (index === 5 || index === 6) videoTime = 8;
   renderer.render(videoTime);
   const cue = cues[renderer.index];
@@ -94,9 +95,11 @@ function seek(time) {
   stage.style.setProperty('--play-progress', `${videoTime / 60 * 100}%`);
   stage.style.setProperty('--progress', `${currentTime / script.duration * 100}%`);
   document.querySelector('#film-clock').textContent = clock(videoTime);
-  document.querySelector('.time-label').textContent = `${clock(currentTime)} / 00:52`;
-  document.querySelector('.narration-caption').textContent = local >= 0.4 && local < scene.end - scene.start - 0.5 ? scene.narration : '';
-  document.querySelector('.rewind-tag').style.opacity = index === 4 && local >= 2 && local < 3.4 ? '1' : '0';
+  document.querySelector('.time-label').textContent = `${clock(currentTime)} / ${clock(script.duration)}`;
+  document.querySelector('.narration-caption').textContent = local >= .25 && local < scene.end - scene.start - .2 ? scene.narration : '';
+  document.querySelector('.rewind-tag').style.opacity = index === 4 && local >= 1 && local < 2.1 ? '1' : '0';
+  const paused = index === 3 && local >= 1.4 && local < 2.2 || index === 4 && local >= 1 && local < 1.6;
+  document.querySelector('.film-controls > span:first-child').textContent = paused ? '▶' : 'Ⅱ';
   document.querySelector('.alignment-pill').textContent = `${placement === 'right' ? '靠右' : '靠左'} · ${{ left: '左对齐', center: '居中对齐', right: '右对齐' }[textAlign]}`;
   document.querySelector('.cover-icon').style.transform = `translateY(${Math.sin(local * 0.7) * 12}px) rotate(${-10 + local * 1.2}deg)`;
   timeline.value = currentTime;
@@ -116,7 +119,7 @@ document.querySelector('#restart').addEventListener('click', () => { seek(0); pl
 timeline.addEventListener('input', event => { playing = false; seek(Number(event.target.value)); document.querySelector('#play').textContent = '播放'; });
 document.addEventListener('keydown', event => {
   if (event.target.matches('input')) return;
-  if (event.key === 'ArrowRight') seek(Math.min(51.9, script.scenes[sceneIndex + 1]?.start ?? 51.9));
+  if (event.key === 'ArrowRight') seek(script.scenes[sceneIndex + 1]?.start ?? script.duration - .01);
   if (event.key === 'ArrowLeft') seek(script.scenes[Math.max(0, sceneIndex - 1)].start);
   if (event.code === 'Space') { event.preventDefault(); document.querySelector('#play').click(); }
 });

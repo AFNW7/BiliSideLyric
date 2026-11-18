@@ -4,7 +4,7 @@
 
 把 B 站字幕放在播放器左侧或右侧，像音乐软件的歌词一样随播放流动。原生 JavaScript、Manifest V3、无需安装依赖或构建，适用于 Edge 120+ 和支持 MV3 的 Chromium 浏览器。
 
-[下载安装包](https://github.com/AFNW7/BiliSideLyric/releases/latest) · [观看宣传片](https://github.com/AFNW7/BiliSideLyric/releases/download/v1.0.3/SideLyric-promo-1080p.mp4)
+[下载安装包](https://github.com/AFNW7/BiliSideLyric/releases/latest) · [观看宣传片（大肥鱼配音 · 28 秒）](https://github.com/AFNW7/BiliSideLyric/releases/download/v1.0.3/SideLyric-promo-fish-28s-1080p.mp4)
 
 ## 三分钟安装
 
@@ -43,7 +43,7 @@
 
 ![旁白实际渲染效果](promo/poster.jpg)
 
-`promo/` 包含 52 秒宣传片的可编辑分镜、中文旁白文案、原创配乐生成脚本和逐帧导出工具。运行本地预览后访问 `/promo/index.html`，可直接播放宣传片分镜；成片与再生成方法见 [宣传片说明](promo/README.md)。
+`promo/` 包含 28 秒宣传片的可编辑分镜、bibibobo 大肥鱼配音生成脚本、原创配乐和逐帧导出工具。运行本地预览后访问 `/promo/index.html`，可查看宣传片分镜；有声成片与再生成方法见 [宣传片说明](promo/README.md)。
 
 ## 如何使用
 

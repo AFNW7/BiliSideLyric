@@ -1,28 +1,31 @@
 # 旁白 SideLyric 宣传片
 
-一支 52 秒、1920×1080、24 fps 的中文产品宣传片。以黑底、紫色标题、黄色提示与产品原有薄荷绿组成视觉语言。八段分镜依次展示观看痛点、歌词高亮、时间同步的长句滑动、回退五秒、位置与文字对齐、外观设置，以及安装入口。
+一支 28 秒、1920×1080、24 fps 的产品宣传片，使用 bibibobo「大肥鱼」fish 声线和同步中文字幕。以黑底、紫色标题、黄色提示与产品原有薄荷绿组成视觉语言。缩短开场和铺垫，八段分镜依次展示歌词高亮、时间同步的长句滑动、回退五秒、位置与文字对齐、外观设置，以及安装入口。
 
 ![宣传片画面](poster.jpg)
 
 ## 观看
 
-- 成片：`output/SideLyric-promo-1080p.mp4`。
-- 在线下载：[1080p MP4](https://github.com/AFNW7/BiliSideLyric/releases/download/v1.0.3/SideLyric-promo-1080p.mp4)。
+- 成片：`output/SideLyric-promo-fish-28s-1080p.mp4`。
+- 在线下载：[大肥鱼配音 · 28 秒 · 1080p MP4](https://github.com/AFNW7/BiliSideLyric/releases/download/v1.0.3/SideLyric-promo-fish-28s-1080p.mp4)。
 - 本地交互分镜：在项目根目录运行 `npm run demo`，访问 `http://127.0.0.1:4173/promo/index.html`。
 - `Space` 播放 / 暂停，左右方向键跳转分镜，拖动底部进度条精确查看任意时刻。
+- HTML 分镜预览静音，配音和配乐请播放 MP4。
 
 ## 素材与真实性
 
 播放器中的字幕使用扩展本身的 `Renderer`，横向进度与示例视频时间绑定。山水图形复用项目内原创 SVG；演示不包含第三方视频、音乐或 B 站账号数据。示例字幕用于展示交互，不能代表任意视频都能获取 AI 字幕。
 
-音乐由 `audio.py` 本地合成，旁白来自 Windows 自带中文语音。成片带画内字幕，另提供 `captions.srt`。素材无需访问外部字体、图库或语音服务。
+音乐由 `audio.py` 本地合成，速度为 116 BPM。配音使用 [hakihakii/bibibobo](https://github.com/hakihakii/bibibobo) 的原始 `fish` 预设（大肥鱼），保留默认语速与音高，仅缩短句间停顿。它是随文字生成的「哔哔啵啵」角色音，内容通过画内字幕表达，不使用 Windows 中文语音。成片另提供 `captions.srt`。生成过程无需访问字体、图库或语音服务。
+
+`vendor/bibibobo/bibibobo.js` 原样取自上游提交 [`3ac39a2299f84e41432ee8a2f52c174b7a7dfe67`](https://github.com/hakihakii/bibibobo/tree/3ac39a2299f84e41432ee8a2f52c174b7a7dfe67)，作者 hakihakii (Lumoswitch)，采用 MIT 协议，完整版权声明保留在 [vendor/bibibobo/LICENSE](vendor/bibibobo/LICENSE)。该库仅用于宣传片制作，不进入扩展运行包。
 
 ## 重新导出
 
 需要 Node.js 20+、Playwright、本机 Edge，以及 Python 的 `numpy` 和 `imageio-ffmpeg`。这些仅为视频制作工具，扩展运行不需要它们。
 
 ```powershell
-powershell -ExecutionPolicy Bypass -File promo/narration.ps1
+node promo/narration.mjs
 python promo/audio.py
 node promo/export.mjs --stills
 node promo/export.mjs

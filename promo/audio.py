@@ -23,7 +23,7 @@ def main():
     duration = story['duration']
     audio = np.zeros((duration * rate, 2), dtype=np.float64)
     chords = [[50, 57, 62, 65], [46, 53, 58, 62], [53, 60, 65, 69], [48, 55, 60, 64]]
-    beat = 60 / 92
+    beat = 60 / 116
     for phrase in range(math.ceil(duration / (beat * 8))):
         chord = chords[phrase % len(chords)]
         for note in chord:
@@ -52,8 +52,6 @@ def main():
         audio[position:position + len(tone), 1] += tone * (1 - pan)
     for scene_index, scene in enumerate(story['scenes']):
         path = output / 'voice' / f'scene-{scene_index:02d}.wav'
-        if not path.exists():
-            continue
         with wave.open(str(path), 'rb') as source:
             voice_rate = source.getframerate()
             channels = source.getnchannels()
@@ -62,20 +60,22 @@ def main():
         if channels > 1:
             samples = samples.reshape(-1, channels).mean(axis=1)
         voice_duration = len(samples) / voice_rate
-        available = scene['end'] - scene['start'] - 1.0
-        target_duration = min(voice_duration, available)
-        voice = np.interp(np.arange(int(target_duration * rate)) / rate, np.arange(len(samples)) / len(samples) * target_duration, samples)
-        start = int((scene['start'] + .55) * rate)
-        audio[start:start + len(voice)] *= .45
-        audio[start:start + len(voice)] += voice[:, None] * .85
+        available = scene['end'] - scene['start'] - .6
+        assert voice_duration <= available, f"{scene['name']}配音超时，请精简文案"
+        voice = np.interp(np.arange(round(voice_duration * rate)) / rate, np.arange(len(samples)) / voice_rate, samples)
+        # 保留大肥鱼原始音高与语速，只重采样至混音采样率。
+        voice /= max(np.max(np.abs(voice)), .01)
+        start = round((scene['start'] + .35) * rate)
+        audio[start:start + len(voice)] *= .3
+        audio[start:start + len(voice)] += voice[:, None] * .42
         print(f"Scene {scene_index + 1}: voice {voice_duration:.2f}s / window {available:.2f}s")
     clock = np.arange(len(audio)) / rate
-    audio *= (np.minimum(clock / .8, 1) * np.minimum((duration - clock) / 1.5, 1))[:, None]
+    audio *= (np.minimum(clock / .15, 1) * np.minimum((duration - clock) / .5, 1))[:, None]
     peak = np.max(np.abs(audio))
     if peak > .92:
         audio *= .92 / peak
     save_wav(output / 'soundtrack.wav', audio, rate)
-    print(f"Soundtrack: {duration}s, {rate}Hz stereo; original synthesized music + local speech")
+    print(f"Soundtrack: {duration}s, {rate}Hz stereo; original music + bibibobo fish voice")
 
 
 if __name__ == '__main__':

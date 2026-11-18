@@ -29,6 +29,14 @@ let encoder;
 try {
   await page.goto(`${base}/promo/index.html?export`, { waitUntil: 'networkidle' });
   await page.waitForFunction(() => window.film?.ready);
+  const render = time => page.evaluate(time => window.film.render(time), time);
+  const pauseStart = await render(story.scenes[3].start + 1.5);
+  const pauseEnd = await render(story.scenes[3].start + 2.1);
+  assert.equal(pauseStart.videoTime, pauseEnd.videoTime, '暂停时长句位置应保持不变');
+  assert((await render(story.scenes[3].start + 3)).videoTime > pauseEnd.videoTime, '继续播放应向前推进');
+  const beforeRewind = await render(story.scenes[4].start + .999);
+  const afterRewind = await render(story.scenes[4].start + 1);
+  assert(Math.abs(beforeRewind.videoTime - afterRewind.videoTime - 5) < .01, '回退演示应准确后退五秒');
   const frames = [];
   for (const [index, scene] of story.scenes.entries()) {
     const time = scene.start + Math.min(3.3, (scene.end - scene.start) / 2);
@@ -39,13 +47,13 @@ try {
     await page.screenshot({ path, type: 'jpeg', quality: 92 });
     frames.push({ name: scene.name, time, path, ...state });
   }
-  await page.evaluate(() => window.film.render(15.2));
+  await page.evaluate(time => window.film.render(time), story.scenes[2].start + 2);
   await page.screenshot({ path: join(directory, 'poster.jpg'), type: 'jpeg', quality: 94 });
   const stamp = value => {
     const seconds = Math.floor(value);
     return `00:${Math.floor(seconds / 60).toString().padStart(2, '0')}:${(seconds % 60).toString().padStart(2, '0')},${Math.round((value - seconds) * 1000).toString().padStart(3, '0')}`;
   };
-  const subtitles = story.scenes.map((scene, index) => `${index + 1}\n${stamp(scene.start + .4)} --> ${stamp(scene.end - .5)}\n${scene.narration}\n`).join('\n');
+  const subtitles = story.scenes.map((scene, index) => `${index + 1}\n${stamp(scene.start + .25)} --> ${stamp(scene.end - .2)}\n${scene.narration}\n`).join('\n');
   await writeFile(join(directory, 'captions.srt'), subtitles);
   if (errors.length) throw new Error(errors.join('\n'));
   if (previewOnly) {
@@ -54,7 +62,7 @@ try {
   } else {
     const ffmpeg = process.env.SIDELYRIC_FFMPEG_PATH || spawnSync('python', ['-c', 'import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())'], { encoding: 'utf8' }).stdout.trim();
     if (!ffmpeg) throw new Error('设置 SIDELYRIC_FFMPEG_PATH，或安装 Python imageio-ffmpeg');
-    const video = join(output, 'SideLyric-promo-1080p.mp4');
+    const video = join(output, 'SideLyric-promo-fish-28s-1080p.mp4');
     const diagnostics = [];
     encoder = spawn(ffmpeg, [
       '-hide_banner', '-loglevel', 'warning', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg',
@@ -80,7 +88,7 @@ try {
     if (errors.length) throw new Error(errors.join('\n'));
     await writeFile(join(output, 'render-report.json'), JSON.stringify({
       title: story.title, duration: story.duration, resolution: `${story.width}x${story.height}`, fps: story.fps,
-      frames: count, video, errors, note: '产品演示使用真实 Renderer 和内置示例字幕；配乐为本地合成，旁白为本地 Windows 中文语音。'
+      frames: count, video, errors, note: '产品演示使用真实 Renderer 和内置示例字幕；原创合成配乐，bibibobo 大肥鱼 fish 声线，28 秒精简版。'
     }, null, 2));
     console.info(`Exported ${video}`);
   }
