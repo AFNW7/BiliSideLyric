@@ -1,6 +1,6 @@
 import { createSettingsView } from '../shared/settings-view.js';
 import { icon } from '../shared/icons.js';
-import { getNoticeAnchor, isFullscreen } from './selectors.js';
+import { getNoticeAnchor, isFullscreen, pageKey } from './selectors.js';
 
 export class OverlayUI {
   constructor(shadow, settings, handlers) {
@@ -32,11 +32,18 @@ export class OverlayUI {
     this.hint = root.querySelector('.sl-hint');
     this.notice = document.createElement('div');
     this.notice.id = 'sidelyric-notice';
-    this.notice.style.cssText = 'display:none!important;position:relative!important;clear:both!important;max-width:100%!important;margin:10px 0!important;';
+    this.notice.style.cssText = 'all:initial!important;display:block!important;visibility:hidden!important;position:fixed!important;bottom:12px!important;z-index:1000!important;box-sizing:border-box!important;';
     const noticeShadow = this.notice.attachShadow({ mode: 'open' });
     const noticeStyle = document.createElement('link');
     noticeStyle.rel = 'stylesheet';
     noticeStyle.href = new URL('../styles/notice.css', import.meta.url).href;
+    const dismiss = document.createElement('button');
+    dismiss.className = 'sl-notice-close';
+    dismiss.type = 'button';
+    dismiss.setAttribute('aria-label', '关闭提示');
+    dismiss.textContent = '×';
+    dismiss.addEventListener('click', () => { this.noticeDismissed = true; this.syncNotice(); });
+    this.hint.append(dismiss);
     noticeShadow.append(noticeStyle, this.hint);
     this.hint.addEventListener('click', event => {
       const button = event.target.closest('[data-action]');
@@ -103,21 +110,32 @@ export class OverlayUI {
   }
 
   mountNotice(video) {
-    const player = getNoticeAnchor(video);
-    if (player?.parentNode && this.notice.previousElementSibling !== player) player.after(this.notice);
-    if (player) this.notice.style.setProperty('width', `${player.getBoundingClientRect().width}px`, 'important');
+    this.noticeAnchor = getNoticeAnchor(video);
+    // 不插入站点的服务端渲染树，避免 Vue 水合时把提示误认为原有兄弟节点。
+    if (this.notice.parentNode !== document.body) document.body.append(this.notice);
+    this.positionNotice();
+  }
+
+  positionNotice() {
+    const rect = this.noticeAnchor?.isConnected ? this.noticeAnchor.getBoundingClientRect() : null;
+    const width = Math.max(0, Math.min(rect?.width || 0, innerWidth - 24));
+    this.notice.style.setProperty('width', `${width}px`, 'important');
+    this.notice.style.setProperty('left', `${Math.max(12, Math.min(rect?.left || 0, innerWidth - width - 12))}px`, 'important');
+    this.noticeFits = !!rect && rect.bottom > 0 && width > 0 && rect.bottom + 10 <= innerHeight - this.hint.getBoundingClientRect().height - 12;
     this.syncNotice();
   }
 
   syncNotice() {
-    const show = !!this.settings.enabled && !!this.status && this.status.phase !== 'ready' && !isFullscreen() && !document.pictureInPictureElement;
+    const show = this.noticeFits && !this.noticeDismissed && !!this.settings.enabled && !!this.status && this.status.phase !== 'ready' && !isFullscreen() && !document.pictureInPictureElement;
     if (this.noticeShown === show) return;
     this.noticeShown = show;
-    this.notice.style.setProperty('display', show ? 'block' : 'none', 'important');
+    this.notice.style.setProperty('visibility', show ? 'visible' : 'hidden', 'important');
   }
 
   updateSettings(settings) { this.settings = settings; this.view.updateSettings(settings); this.syncNotice(); }
   updateStatus(status) {
+    if (this.noticePage !== pageKey() || this.status?.video?.cid !== status.video?.cid) this.noticeDismissed = false;
+    this.noticePage = pageKey();
     this.status = status;
     this.view.updateStatus(status);
     this.root.querySelector('.sl-panel-status').textContent = `${status.source || status.message}${status.count ? ` · ${status.count} 句` : ''}`;
@@ -126,7 +144,7 @@ export class OverlayUI {
     this.hint.hidden = status.phase === 'ready';
     this.hint.querySelector('[data-action="retry"]').hidden = status.phase === 'loading';
     this.hint.querySelector('[data-action="capture"]').hidden = !['empty', 'error'].includes(status.phase) || status.source === '实时采集';
-    this.syncNotice();
+    this.positionNotice();
   }
   destroy() { clearTimeout(this.idleTimer); this.notice.remove(); }
 }

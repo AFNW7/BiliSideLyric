@@ -71,6 +71,27 @@ try {
     assert.equal(await page.evaluate(() => document.querySelector('#bilibili-player').contains(document.querySelector('#sidelyric-notice'))), false);
     await page.screenshot({ path: join(output, 'outside-player-notice.png') });
   });
+  await check('外部提示独立挂在 body，不改变播放器原有兄弟节点顺序', async () => {
+    assert.equal(await notice.evaluate(node => node.parentElement === document.body), true);
+    assert.equal(await page.locator('#bilibili-player').evaluate(node => node.nextElementSibling.tagName), 'SCRIPT');
+  });
+  await check('窗口空间不足时隐藏提示，滚动后恢复且不覆盖视频，可关闭', async () => {
+    await page.evaluate(() => { document.body.style.minHeight = '1200px'; });
+    await page.setViewportSize({ width: 1440, height: 650 });
+    await notice.waitFor({ state: 'hidden' });
+    await page.waitForTimeout(1300);
+    assert.equal(await notice.isVisible(), false);
+    await page.evaluate(() => scrollTo(0, 140));
+    await notice.waitFor({ state: 'visible' });
+    const player = await page.locator('#bilibili-player').boundingBox();
+    const box = await notice.boundingBox();
+    assert.ok(box.y >= player.y + player.height + 10);
+    await notice.locator('.sl-notice-close').click();
+    await notice.waitFor({ state: 'hidden' });
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.reload();
+    await hint.filter({ hasText: '开启 AI 字幕' }).waitFor();
+  });
   await check('无字幕持续重试期间，不自动套用预览文字、其他播放器文字', async () => {
     await page.evaluate(() => {
       document.querySelector('.bpx-player-subtitle-panel-text').textContent = '未开启字幕时的残留示例';

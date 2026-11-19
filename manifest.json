@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "旁白 SideLyric · B 站歌词字幕",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "把 B 站字幕变成播放器一侧的流动歌词。左右位置、文字对齐、播放同步、字幕导入，让每一句都有位置。",
   "minimum_chrome_version": "120",
   "permissions": ["storage", "activeTab"],

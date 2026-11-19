@@ -43,6 +43,7 @@ export class Renderer {
   /** 一次计算布局与可见窗口，播放帧只更新当前句状态。 */
   layout() {
     if (!this.video || !this.mount?.area?.isConnected) return;
+    this.ui.mountNotice(this.video);
     const rect = this.mount.area.getBoundingClientRect();
     if (this.mount.fixed) {
       for (const [key, value] of Object.entries({ inset: 'auto', left: `${rect.left}px`, top: `${rect.top}px`, width: `${rect.width}px`, height: `${rect.height}px` })) this.host.style.setProperty(key, value, 'important');
